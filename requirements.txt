@@ -1,0 +1,5 @@
+# SSH connectivity
+paramiko>=3.0.0
+
+# HTTP requests
+requests>=2.31.0
