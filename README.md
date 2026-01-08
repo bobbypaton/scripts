@@ -1,6 +1,8 @@
 # Scripts
 
-This repository stores Python scripts used by the Paton group at Colorado State University.
+This repository stores Python scripts used by the Paton research group at Colorado State University.
+
+[Paton Lab Homepage](https://patonlab.colostate.edu) | [GitHub Organization](https://github.com/patonlab)
 
 ## Contents
 
