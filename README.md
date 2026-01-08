@@ -8,6 +8,7 @@ This repository stores Python scripts used by the Paton research group at Colora
 
 - **[check_acme.py](check_acme.py)** - Monitors ACME cluster internal nodes (node01-node20) by connecting through a head node and sends Slack alerts for down nodes
 - **[check_machines.py](check_machines.py)** - Checks health status and CPU load of group Linux machines and sends periodic reports to Slack
+- **[paton_pymol_style.py](paton_pymol_style.py)** - PyMOL visualization configuration with custom functions for ball-and-stick models, VDW surfaces, molecular orbitals, and spin density plots
 
 ## Requirements
 
@@ -87,6 +88,35 @@ python check_machines.py --test
 - SSH-based load average monitoring
 - Status indicators (🟢 healthy, 🟡 high load, 🔴 offline)
 - Custom username mapping for specific hosts
+
+### paton_pymol_style.py
+
+PyMOL configuration script for publication-quality molecular visualizations.
+
+**Setup:**
+Load this script in PyMOL or add to your `.pymolrc` file:
+```bash
+# In PyMOL
+run /path/to/paton_pymol_style.py
+
+# Or add to ~/.pymolrc
+run ~/path/to/paton_pymol_style.py
+```
+
+**Available commands:**
+- `ballnstick <selection>` - Create ball-and-stick representation with custom colors
+- `Add_VDW <selection>` - Add transparent van der Waals surface
+- `Add_homo <name>` - Visualize HOMO from cube file
+- `Add_lumo <name>` - Visualize LUMO from cube file
+- `Add_spin <name>` - Visualize spin density from cube file
+- `spin_density_plot <name> <isovalue>` - Custom spin density with adjustable isovalue
+- `nci <name> <min> <max>` - Visualize non-covalent interactions
+
+**Features:**
+- Bondi van der Waals radii for all elements
+- High-quality rendering settings optimized for publication
+- CMYK color space for print compatibility
+- Customizable molecular orbital and density visualizations
 
 ## Contributing
 
