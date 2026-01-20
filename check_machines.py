@@ -5,6 +5,17 @@ import sys
 import argparse
 import paramiko
 import os
+from pathlib import Path
+
+# Load environment variables from .env file
+env_file = Path(__file__).parent / ".env"
+if env_file.exists():
+    with open(env_file) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, value = line.split("=", 1)
+                os.environ.setdefault(key.strip(), value.strip())
 
 # --- CONFIGURATION ---
 MACHINES = [
@@ -39,7 +50,7 @@ SSH_TIMEOUT = 3
 def get_node_status(host):
     # Ping check
     ping = subprocess.run(
-        ["ping", "-c", "1", "-W", str(PING_TIMEOUT), host],
+        ["/sbin/ping", "-c", "1", "-W", str(PING_TIMEOUT), host],
         capture_output=True
     )
     if ping.returncode != 0:
