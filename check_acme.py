@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import paramiko
 import json
 import sys
@@ -26,6 +27,7 @@ NODES = [f"node{i:02d}" for i in range(1, 21)]
 
 # Load credentials from environment variables
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_ACME")
+SSH_PASSWORD = os.getenv("SSH_PASSWORD")
 
 # Timeouts and thread pool settings
 SSH_TIMEOUT = 10
@@ -50,6 +52,7 @@ def check_node_via_jump(node_hostname, retry=True):
         gateway.connect(
             HEAD_NODE_IP,
             username=HEAD_NODE_USER,
+            password=SSH_PASSWORD,
             timeout=SSH_TIMEOUT
         )
 
@@ -120,6 +123,7 @@ def verify_head_node_connection():
         gateway.connect(
             HEAD_NODE_IP,
             username=HEAD_NODE_USER,
+            password=SSH_PASSWORD,
             timeout=SSH_TIMEOUT
         )
         return True
@@ -143,6 +147,10 @@ def main():
     # Validate required environment variables
     if not args.test and not SLACK_WEBHOOK_URL:
         print("ERROR: SLACK_WEBHOOK_URL environment variable must be set", file=sys.stderr)
+        sys.exit(1)
+
+    if not SSH_PASSWORD:
+        print("ERROR: SSH_PASSWORD environment variable must be set", file=sys.stderr)
         sys.exit(1)
 
     # Verify head node connection first

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import subprocess
 import requests
 import json
@@ -27,7 +28,8 @@ MACHINES = [
     "droctavius.chem.colostate.edu",
     "drmaximus.chem.colostate.edu",
     "fireball.chem.colostate.edu",
-    "subzero.chem.colostate.edu"
+    "subzero.chem.colostate.edu",
+    "woody.chem.colostate.edu"
 ]
 
 # Load credentials from environment variables
