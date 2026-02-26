@@ -19,29 +19,22 @@ if env_file.exists():
                 os.environ.setdefault(key.strip(), value.strip())
 
 # --- CONFIGURATION ---
-MACHINES = [
-    "acme.chem.colostate.edu",
-    "dynamo.chem.colostate.edu",
-    "buzzsaw.chem.colostate.edu",
-    "skymarshal.chem.colostate.edu",
-    "drstrange.chem.colostate.edu",
-    "droctavius.chem.colostate.edu",
-    "drmaximus.chem.colostate.edu",
-    "fireball.chem.colostate.edu",
-    "subzero.chem.colostate.edu",
-    "woody.chem.colostate.edu"
-]
+# Machine list from comma-separated env var
+MACHINES = [m.strip() for m in os.getenv("MACHINES", "").split(",") if m.strip()]
 
 # Load credentials from environment variables
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_UNIX")
-SSH_USER = os.getenv("SSH_USER", "rpaton")
+SSH_USER = os.getenv("SSH_USER")
 SSH_PASSWORD = os.getenv("SSH_PASSWORD")
 
-# Special username mappings for specific hosts
-SSH_USERS = {
-    "drstrange.chem.colostate.edu": "bobbypaton",
-    "droctavius.chem.colostate.edu": "robertpaton"
-}
+# Special username mappings for specific hosts (format: "host1:user1,host2:user2")
+SSH_USERS = {}
+if os.getenv("SSH_USERS_MAP"):
+    for entry in os.getenv("SSH_USERS_MAP").split(","):
+        entry = entry.strip()
+        if ":" in entry:
+            host, user = entry.split(":", 1)
+            SSH_USERS[host.strip()] = user.strip()
 
 # Timeouts and thresholds
 PING_TIMEOUT = 1
@@ -149,8 +142,16 @@ def main():
     args = parser.parse_args()
 
     # Validate required environment variables
+    if not MACHINES:
+        print("ERROR: MACHINES environment variable must be set (comma-separated hostnames)", file=sys.stderr)
+        sys.exit(1)
+
+    if not SSH_USER:
+        print("ERROR: SSH_USER environment variable must be set", file=sys.stderr)
+        sys.exit(1)
+
     if not args.test and not SLACK_WEBHOOK_URL:
-        print("ERROR: SLACK_WEBHOOK_URL environment variable must be set", file=sys.stderr)
+        print("ERROR: SLACK_WEBHOOK_UNIX environment variable must be set", file=sys.stderr)
         sys.exit(1)
 
     if not SSH_PASSWORD:

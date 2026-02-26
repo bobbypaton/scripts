@@ -19,8 +19,8 @@ if env_file.exists():
                 os.environ.setdefault(key.strip(), value.strip())
 
 # --- CONFIGURATION ---
-HEAD_NODE_IP = "129.82.77.43"
-HEAD_NODE_USER = os.getenv("HEAD_NODE_USER", "rpaton")
+HEAD_NODE_IP = os.getenv("HEAD_NODE_IP")
+HEAD_NODE_USER = os.getenv("HEAD_NODE_USER")
 
 # List of nodes: node01, node02... node20
 NODES = [f"node{i:02d}" for i in range(1, 21)]
@@ -145,8 +145,16 @@ def main():
     args = parser.parse_args()
 
     # Validate required environment variables
+    if not HEAD_NODE_IP:
+        print("ERROR: HEAD_NODE_IP environment variable must be set", file=sys.stderr)
+        sys.exit(1)
+
+    if not HEAD_NODE_USER:
+        print("ERROR: HEAD_NODE_USER environment variable must be set", file=sys.stderr)
+        sys.exit(1)
+
     if not args.test and not SLACK_WEBHOOK_URL:
-        print("ERROR: SLACK_WEBHOOK_URL environment variable must be set", file=sys.stderr)
+        print("ERROR: SLACK_WEBHOOK_ACME environment variable must be set", file=sys.stderr)
         sys.exit(1)
 
     if not SSH_PASSWORD:
