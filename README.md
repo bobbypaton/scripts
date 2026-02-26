@@ -36,15 +36,18 @@ Create a `.env` file with the following variables:
 
 - `SLACK_WEBHOOK_ACME` - Slack webhook URL for ACME node alerts
 - `SLACK_WEBHOOK_UNIX` - Slack webhook URL for machine health reports
-- `HEAD_NODE_USER` - SSH username for ACME head node (default: rpaton)
-- `SSH_USER` - Default SSH username for machine checks (default: rpaton)
+- `HEAD_NODE_IP` - IP address of the ACME head node
+- `HEAD_NODE_USER` - SSH username for ACME head node
+- `SSH_USER` - Default SSH username for machine checks
 - `SSH_PASSWORD` - SSH password for machine authentication
+- `MACHINES` - Comma-separated list of machine hostnames to monitor
+- `SSH_USERS_MAP` - Optional per-host SSH username overrides (`host:user` pairs, comma-separated)
 
 ## Usage
 
 ### check_acme.py
 
-Monitors ACME cluster nodes by connecting through the head node at 129.82.77.43.
+Monitors ACME cluster nodes by connecting through a head node (configured via `HEAD_NODE_IP` env var).
 
 ```bash
 # Run check and send alerts to Slack
@@ -72,16 +75,7 @@ python check_machines.py
 python check_machines.py --test
 ```
 
-**Monitored machines:**
-- acme.chem.colostate.edu
-- dynamo.chem.colostate.edu
-- buzzsaw.chem.colostate.edu
-- skymarshal.chem.colostate.edu
-- drstrange.chem.colostate.edu
-- droctavius.chem.colostate.edu
-- drmaximus.chem.colostate.edu
-- fireball.chem.colostate.edu
-- subzero.chem.colostate.edu
+**Monitored machines** are configured via the `MACHINES` environment variable (comma-separated hostnames).
 
 **Features:**
 - Ping connectivity checks
