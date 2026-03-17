@@ -9,6 +9,9 @@ This repository stores Python scripts used by the Paton research group at Colora
 - **[check_acme.py](check_acme.py)** - Monitors ACME cluster internal nodes (node01-node20) by connecting through a head node and sends Slack alerts for down nodes
 - **[check_machines.py](check_machines.py)** - Checks health status and CPU load of group Linux machines and sends periodic reports to Slack
 - **[paton_pymol_style.py](paton_pymol_style.py)** - PyMOL visualization configuration with custom functions for ball-and-stick models, VDW surfaces, molecular orbitals, and spin density plots
+- **[metrics/hf_spaces_analytics.py](metrics/hf_spaces_analytics.py)** - HF Spaces analytics: fetches space metadata (likes, SDK, status) and tracks visits to a private HF Dataset repo
+- **[metrics/gh_traffic.py](metrics/gh_traffic.py)** - GitHub traffic logger: collects views and clones to local CSVs (run weekly via cron)
+- **[metrics/weekly_report.py](metrics/weekly_report.py)** - Combines all metrics and posts a weekly summary to Slack
 
 ## Requirements
 
@@ -36,12 +39,16 @@ Create a `.env` file with the following variables:
 
 - `SLACK_WEBHOOK_ACME` - Slack webhook URL for ACME node alerts
 - `SLACK_WEBHOOK_UNIX` - Slack webhook URL for machine health reports
+- `SLACK_WEBHOOK_METRICS` - Slack webhook URL for weekly metrics report
 - `HEAD_NODE_IP` - IP address of the ACME head node
 - `HEAD_NODE_USER` - SSH username for ACME head node
 - `SSH_USER` - Default SSH username for machine checks
 - `SSH_PASSWORD` - SSH password for machine authentication
 - `MACHINES` - Comma-separated list of machine hostnames to monitor
 - `SSH_USERS_MAP` - Optional per-host SSH username overrides (`host:user` pairs, comma-separated)
+- `HF_TOKEN` - Hugging Face API token with write access (for `hf_spaces_analytics.py`)
+- `HUGGINGFACE_TOKEN` - Hugging Face API token (for `hf_spaces_analytics.py`, optional)
+- `GITHUB_TOKEN` - GitHub personal access token with `repo` scope (for `gh_traffic.py`)
 
 ## Usage
 
@@ -82,6 +89,65 @@ python check_machines.py --test
 - SSH-based load average monitoring
 - Status indicators (🟢 healthy, 🟡 high load, 🔴 offline)
 - Custom username mapping for specific hosts
+
+### metrics/hf_spaces_analytics.py
+
+HF Spaces analytics and visit tracking in one script.
+
+```bash
+# Fetch space metadata (likes, SDK, status) for default authors
+python metrics/hf_spaces_analytics.py spaces
+
+# Custom authors / token
+python metrics/hf_spaces_analytics.py spaces --authors patonlab bobbypaton --token hf_xxx
+
+# Print visit count summary from analytics repo
+python metrics/hf_spaces_analytics.py visits
+```
+
+To track visits from inside a Space, import and call `log_visit()` at app startup. See the file for Gradio-specific examples. Requires `HF_TOKEN` set as a Space secret.
+
+### metrics/gh_traffic.py
+
+Collects GitHub traffic stats (views, clones) and stores them in local CSVs. GitHub only retains 14 days of traffic data, so run this weekly via cron.
+
+```bash
+# Collect traffic for all patonlab repos
+python metrics/gh_traffic.py collect
+
+# Collect for specific orgs or repos
+python metrics/gh_traffic.py collect --orgs patonlab bobbypaton
+python metrics/gh_traffic.py collect --repos patonlab/aqme patonlab/goodvibes
+
+# Dry run (print without writing)
+python metrics/gh_traffic.py collect --test
+
+# View summary of stored data (overview + monthly breakdown)
+python metrics/gh_traffic.py summary
+
+# Show top 20 repos in monthly tables (default: 12)
+python metrics/gh_traffic.py summary --top 20
+```
+
+Requires `GITHUB_TOKEN` with `repo` scope. Data is saved to `metrics/data/` (gitignored).
+
+### metrics/weekly_report.py
+
+Runs all metrics collection and posts a combined summary to Slack.
+
+```bash
+# Post to Slack
+python metrics/weekly_report.py
+
+# Print to stdout instead
+python metrics/weekly_report.py --test
+```
+
+Requires `SLACK_WEBHOOK_METRICS`. To run weekly via cron (Monday 8am):
+
+```bash
+0 8 * * 1 cd /Users/rpaton/Documents/scripts && python3 metrics/weekly_report.py
+```
 
 ### paton_pymol_style.py
 

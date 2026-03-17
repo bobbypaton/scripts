@@ -41,6 +41,9 @@ env/
 .AppleDouble
 .LSOverride
 
+# Collected metrics data
+metrics/data/
+
 # Logs
 *.log
 
