@@ -13,7 +13,7 @@ paton_pymol_style.py             # PyMOL publication-quality visualization confi
 metrics/
   hf_spaces_analytics.py         # HF Spaces analytics + visit tracking
   gh_traffic.py                  # GitHub traffic collection (views, clones)
-  weekly_report.py               # Weekly Slack report (cron-scheduled)
+  weekly_report.py               # Weekly Slack report (launchd-scheduled)
   data/                          # Collected CSV data (gitignored)
 .env                             # Credentials and config (gitignored)
 .env.example                     # Template for .env setup
@@ -50,4 +50,4 @@ python metrics/weekly_report.py --test
 - **SSH**: Password-based auth via paramiko; check_acme uses SSH jumping through a head node, check_machines connects directly
 - **Error handling**: Try-except with specific exception types (paramiko, requests); scripts continue processing on individual failures
 - **Parallelism**: check_acme uses `ThreadPoolExecutor` (5 workers); check_machines runs sequentially
-- **Metrics**: GitHub traffic collected to local CSVs (deduplicated on overlap); HF visit tracking via private dataset repo; weekly Slack reports via cron
+- **Metrics**: GitHub traffic collected to local CSVs (deduplicated on overlap); HF visit tracking via private dataset repo; weekly Slack reports via launchd (`~/Library/LaunchAgents/com.patonlab.*.plist`)

@@ -29,7 +29,7 @@ if env_file.exists():
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
-                os.environ.setdefault(key.strip(), value.strip())
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 try:
     import requests
@@ -114,6 +114,7 @@ def get_visit_rows():
             filename=ANALYTICS_FILE,
             repo_type="dataset",
             token=token,
+            force_download=True,  # always fetch latest, bypass local cache
         )
         with open(path, newline="") as f:
             return list(csv.DictReader(f))
@@ -156,6 +157,8 @@ def print_visit_summary():
         space = row["space"]
         try:
             ts = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
         except (ValueError, KeyError):
             continue
         if space not in spaces:

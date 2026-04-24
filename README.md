@@ -85,7 +85,7 @@ python check_machines.py --test
 **Monitored machines** are configured via the `MACHINES` environment variable (comma-separated hostnames).
 
 **Features:**
-- Ping connectivity checks
+- Ping connectivity checks (with retry for wake-on-LAN hosts)
 - SSH-based load average monitoring
 - Status indicators (🟢 healthy, 🟡 high load, 🔴 offline)
 - Custom username mapping for specific hosts
@@ -143,11 +143,7 @@ python metrics/weekly_report.py
 python metrics/weekly_report.py --test
 ```
 
-Requires `SLACK_WEBHOOK_METRICS`. To run weekly via cron (Monday 8am):
-
-```bash
-0 8 * * 1 cd /Users/rpaton/Documents/scripts && python3 metrics/weekly_report.py
-```
+Requires `SLACK_WEBHOOK_METRICS`. Scheduled weekly via launchd (Monday 8am) — see `~/Library/LaunchAgents/com.patonlab.weekly-report.plist`.
 
 ### paton_pymol_style.py
 

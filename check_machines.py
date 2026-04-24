@@ -49,7 +49,14 @@ def get_node_status(host):
         capture_output=True
     )
     if ping.returncode != 0:
-        return "🔴 OFFLINE", "Critical"
+        # Retry with a longer window: hosts configured for wake-on-LAN
+        # may take a few seconds to come online after the first probe.
+        ping = subprocess.run(
+            ["/sbin/ping", "-c", "5", "-W", "2", host],
+            capture_output=True
+        )
+        if ping.returncode != 0:
+            return "🔴 OFFLINE", "Critical"
 
     # Load check via SSH
     client = None

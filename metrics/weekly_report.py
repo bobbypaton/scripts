@@ -8,8 +8,8 @@ Usage:
     python weekly_report.py
     python weekly_report.py --test   # print to stdout instead of Slack
 
-Crontab entry (Monday 8am):
-    0 8 * * 1 cd /Users/rpaton/Documents/scripts && python metrics/weekly_report.py
+Scheduled via launchd (Monday 8am):
+    ~/Library/LaunchAgents/com.patonlab.weekly-report.plist
 """
 
 import argparse
@@ -28,7 +28,7 @@ if env_file.exists():
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
-                os.environ.setdefault(key.strip(), value.strip())
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 import requests
 
